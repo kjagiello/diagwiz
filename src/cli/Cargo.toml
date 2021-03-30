@@ -1,0 +1,10 @@
+[package]
+name = "diagwiz"
+version = "0.1.0"
+authors = ["Krzysztof Jagiello <me@kjagiello.com>"]
+edition = "2018"
+
+[dependencies]
+diagram_base = { path = "../diagrams/base", version = "0.1.0" }
+diagram_seq = { path = "../diagrams/seq", version = "0.1.0" }
+clap = { version = "2.33.3" }

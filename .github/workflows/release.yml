@@ -1,0 +1,127 @@
+name: Release
+
+on:
+  schedule:
+    - cron: '5 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [linux, linux-arm, macos, win-msvc, win-gnu, win32-msvc]
+        include:
+        - build: linux
+          os: ubuntu-18.04
+          rust: nightly
+          target: x86_64-unknown-linux-musl
+        - build: linux-arm
+          os: ubuntu-18.04
+          rust: nightly
+          target: arm-unknown-linux-gnueabihf
+        - build: macos
+          os: macos-latest
+          rust: nightly
+          target: x86_64-apple-darwin
+        - build: win-msvc
+          os: windows-2019
+          rust: nightly
+          target: x86_64-pc-windows-msvc
+          win: true
+        - build: win-gnu
+          os: windows-2019
+          rust: nightly-x86_64-gnu
+          target: x86_64-pc-windows-gnu
+          win: true
+        - build: win32-msvc
+          os: windows-2019
+          rust: nightly
+          target: i686-pc-windows-msvc
+          win: true
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          target: ${{ matrix.target }}
+          profile: minimal
+          override: true
+
+      - name: Run cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --release --target ${{ matrix.target }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: diagwiz-${{ matrix.target }}
+          path: |
+            target/${{ matrix.target }}/release/diagwiz
+            target/${{ matrix.target }}/release/diagwiz.exe
+          retention-days: 1
+          if-no-files-found: error
+
+  release-nightly:
+    name: Release (nightly)
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Declare variables
+        id: vars
+        shell: bash
+        run: echo "::set-output name=sha_short::${GITHUB_SHA::8}"
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Delete previous nightly release
+        uses: dev-drprasad/delete-tag-and-release@v0.1.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          delete_release: true
+          tag_name: nightly
+
+      - name: Create release
+        uses: meeDamian/github-release@2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: nightly
+          name: diagwiz-nightly
+          prerelease: true
+          commitish: ${{ github.sha }}
+          gzip: false
+          allow_override: true
+          files: |
+            diagwiz-x86_64-unknown-linux-musl:./diagwiz-x86_64-unknown-linux-musl/diagwiz
+            diagwiz-arm-unknown-linux-gnueabihf:./diagwiz-arm-unknown-linux-gnueabihf/diagwiz
+            diagwiz-x86_64-apple-darwin:./diagwiz-x86_64-apple-darwin/diagwiz
+            diagwiz-x86_64-pc-windows-msvc:./diagwiz-x86_64-pc-windows-msvc/diagwiz.exe
+            diagwiz-x86_64-pc-windows-gnu:./diagwiz-x86_64-pc-windows-gnu/diagwiz.exe
+            diagwiz-i686-pc-windows-msvc:./diagwiz-i686-pc-windows-msvc/diagwiz.exe
+          body: diagwiz nightly build
+
+  cleanup:
+    name: Cleanup
+    if: always()
+    needs: release-nightly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: geekyeggo/delete-artifact@v1
+        with:
+          name: |
+            diagwiz-x86_64-unknown-linux-musl
+            diagwiz-arm-unknown-linux-gnueabihf
+            diagwiz-x86_64-apple-darwin
+            diagwiz-x86_64-pc-windows-msvc
+            diagwiz-x86_64-pc-windows-gnu
+            diagwiz-i686-pc-windows-msvc

@@ -1,0 +1,11 @@
+[workspace]
+members = ["src/cli"]
+default-members = ["src/cli"]
+
+[profile.dev]
+panic = "abort"
+split-debuginfo = "unpacked"
+
+[profile.release]
+panic = "abort"
+lto = true

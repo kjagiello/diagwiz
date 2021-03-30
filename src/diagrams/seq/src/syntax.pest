@@ -1,0 +1,18 @@
+WHITESPACE = _{ " " }
+COMMENT = _{ ("#" | "//") ~ (!"\n" ~ ANY)* }
+
+name = @{ ASCII_ALPHANUMERIC+ }
+
+string = _{ "\"" ~ string_inner ~ "\"" }
+string_inner = @{ string_char* }
+string_char = {
+    !("\"" | "\\") ~ ANY
+    | "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
+    | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+}
+
+alias = { ^"alias" ~ name ~ "=" ~ string }
+pair = { name ~ "->" ~ name ~ ":" ~ string }
+
+expr = _{ alias | pair }
+main = { SOI ~ ((expr? ~ NEWLINE)* ~ EOI) | (expr? ~ EOI) }

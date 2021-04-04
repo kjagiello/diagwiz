@@ -1,0 +1,21 @@
+@font-face {
+  font-family: 'RedHatDisplay-Bold';
+  src: url('/assets/fonts/RedHatDisplay-Bold.ttf');
+}
+
+html, body {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	color: #333;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+pre {
+	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+}

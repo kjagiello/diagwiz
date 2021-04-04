@@ -1,0 +1,23 @@
+@top Program { (stmt "\n"*) * }
+@skip { space | LineComment }
+
+stmt {
+  Alias |
+  Message
+}
+
+Alias { kw<"alias"> Identifier "=" String }
+Message { Identifier MessageOperator Identifier ":" String }
+
+kw<term> { @specialize[@name={term}]<Identifier, term> }
+
+@tokens {
+  Identifier { $[a-zA-Z_0-9]+ }
+  String { '"' (!["\\] | "\\" _)* '"' }
+  LineComment { ("#" | "//") ![\n]* }
+  MessageOperator { "->" }
+  // space { std.whitespace+ }
+  space { $[ \t]+ }
+}
+
+@detectDelim

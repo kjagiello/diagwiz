@@ -1,6 +1,6 @@
-# diagwiz -- ASCII diagrams as code
+# diagwiz -- diagrams as code
 
-[![CI](https://github.com/kjagiello/diagwiz/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/kjagiello/diagwiz/actions/workflows/ci.yml) [![Security audit](https://github.com/kjagiello/diagwiz/actions/workflows/audit.yml/badge.svg)](https://github.com/kjagiello/diagwiz/actions/workflows/audit.yml)
+[![CI](https://github.com/kjagiello/diagwiz/actions/workflows/diagwiz-ci.yml/badge.svg?event=push)](https://github.com/kjagiello/diagwiz/actions/workflows/diagwiz-ci.yml) [![Security audit](https://github.com/kjagiello/diagwiz/actions/workflows/diagwiz-audit.yml/badge.svg)](https://github.com/kjagiello/diagwiz/actions/workflows/diagwiz-audit.yml)
 
 **Warning**: This project is in early experimental stage. Functionality is
 subject to change and YMMV. Feel free to open an issue if you have any
@@ -10,6 +10,11 @@ bugs.
 ## Supported diagrams
 
 - [Sequence diagrams](https://en.wikipedia.org/wiki/Sequence_diagram)
+
+## Online playground
+
+You can experiment building diagrams with diagwiz using the
+[online playground](https://diagwiz.io/playground).
 
 # Installation
 

@@ -6,6 +6,12 @@
 :root {
 	--secondary-bg-color: #000;
 	--link-color: #000;
+
+	/* Toast style */
+	--toastContainerTop: auto;
+	--toastContainerRight: auto;
+	--toastContainerBottom: 2rem;
+	--toastContainerLeft: calc(50vw - 8rem);
 }
 
 html, body {

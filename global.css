@@ -23,3 +23,7 @@ body {
 pre {
 	font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
 }
+
+svg {
+	vertical-align: top;
+}

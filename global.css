@@ -5,6 +5,7 @@
 
 :root {
 	--secondary-bg-color: #000;
+	--link-color: #000;
 }
 
 html, body {
@@ -26,4 +27,8 @@ pre {
 
 svg {
 	vertical-align: top;
+}
+
+a {
+	color: var(--link-color);
 }

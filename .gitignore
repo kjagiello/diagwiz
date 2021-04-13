@@ -1,1 +1,8 @@
+# Rust
 target/
+
+# Site
+site/.svelte
+site/build
+site/node_modules/
+site/public/build/

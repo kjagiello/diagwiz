@@ -1,6 +1,7 @@
 [workspace]
-members = ["src/cli"]
 default-members = ["src/cli"]
+members = ["src/cli"]
+exclude = ["site/diagwiz"]
 
 [profile.dev]
 panic = "abort"

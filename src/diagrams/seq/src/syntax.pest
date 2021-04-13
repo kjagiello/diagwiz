@@ -1,7 +1,19 @@
 WHITESPACE = _{ " " }
 COMMENT = _{ ("#" | "//") ~ (!"\n" ~ ANY)* }
 
-name = @{ ASCII_ALPHANUMERIC+ }
+// Make sure that that no keyword in this rule is a prefix of a any
+// succeeding keyword. For example { "alias" | "aliasson" } will never match
+// "aliassion"
+_keyword = @{ "alias" }
+keyword = @{ _keyword }
+
+// Allow any identifier that is not a keyword. Also, identifiers are not begin
+// with a digit.
+identifier = @{
+    !(keyword ~ !ASCII_ALPHA)
+    ~ (ASCII_ALPHA | "_")
+    ~ (ASCII_ALPHANUMERIC | "_")*
+}
 
 string = _{ "\"" ~ string_inner ~ "\"" }
 string_inner = @{ string_char* }
@@ -11,8 +23,8 @@ string_char = {
     | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
 }
 
-alias = { ^"alias" ~ name ~ "=" ~ string }
-pair = { name ~ "->" ~ name ~ ":" ~ string }
+alias = { ^"alias " ~ identifier ~ "=" ~ string }
+pair = { identifier ~ "->" ~ identifier ~ (":" ~ string)? }
 
 expr = _{ alias | pair }
 main = { SOI ~ ((expr? ~ NEWLINE)* ~ EOI) | (expr? ~ EOI) }

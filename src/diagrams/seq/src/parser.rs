@@ -30,7 +30,7 @@ pub struct SequenceDiagram {
     pub messages: Vec<Message>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum ParserError {
     SyntaxError(String),
 }
@@ -61,7 +61,10 @@ pub fn diagram(input: String) -> Result<SequenceDiagram, ParserError> {
 
                         let source: &str = inner_rules.next().unwrap().as_str();
                         let target: &str = inner_rules.next().unwrap().as_str();
-                        let label: &str = inner_rules.next().unwrap().as_str();
+                        let label: &str = match inner_rules.peek() {
+                            Some(_) => inner_rules.next().unwrap().as_str(),
+                            None => "",
+                        };
 
                         diag.messages.push(Message {
                             source: String::from(source),
@@ -103,6 +106,14 @@ mod test {
     }
 
     #[test]
+    fn parse_empty_message() {
+        let data = "a->b";
+        let result = diagram(String::from(data)).unwrap();
+        assert_eq!(result.messages.len(), 1);
+        assert_eq!(result.messages[0].payload, "");
+    }
+
+    #[test]
     fn parse_message_payload_with_unicode() {
         let data = r#"a->b: "𩸽""#;
         let result = diagram(String::from(data)).unwrap();
@@ -118,5 +129,40 @@ mod test {
         let result = diagram(String::from(data)).unwrap();
         assert_eq!(result.messages.len(), 1);
         assert_eq!(result.messages[0].payload, "\"hello\"");
+    }
+
+    #[test]
+    fn disallows_keyword_identifiers() {
+        let data = "alias alias = \"aliasson\"";
+        let result = diagram(String::from(data));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn disallows_idedntifiers_with_numeric_prefix() {
+        let data = "alias 1a = \"b\"";
+        let result = diagram(String::from(data));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn allows_identifier_with_keyword_substring() {
+        let data = "alias aliassson = \"aliasson\"";
+        let result = diagram(String::from(data));
+        assert!(!result.is_err());
+    }
+
+    #[test]
+    fn allows_underscores_in_identifiers() {
+        let data = "alias _a_b_ = \"c\"";
+        let result = diagram(String::from(data));
+        assert!(!result.is_err());
+    }
+
+    #[test]
+    fn requires_a_space_after_alias_keyword() {
+        let data = "aliasabc = \"d\"";
+        let result = diagram(String::from(data));
+        assert!(result.is_err());
     }
 }

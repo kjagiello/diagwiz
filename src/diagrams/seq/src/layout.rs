@@ -69,6 +69,7 @@ struct Node<T: Render<C>, C> {
 
 impl<T: Render<C>, C> Node<T, C> {
     fn coords(&self, solver: &Solver) -> Vars<usize> {
+        // Into<Vars> for Solver
         Vars {
             left: solver.get_value(self.vars.left) as usize,
             top: solver.get_value(self.vars.top) as usize,
@@ -104,7 +105,12 @@ struct BareRenderCtx;
 
 impl Render<BareRenderCtx> for Arc<Participant> {
     fn width(&self, _ctx: &BareRenderCtx) -> Option<usize> {
-        Some(self.name.graphemes(true).count() + 4)
+        let width = self.name.graphemes(true).count() + 4;
+
+        // TODO: explore if we can do the rounding in the constraint solver instead
+        // Ensure that the width is divisible by two to avoid decimals as we are rendering onto a
+        // integer based coordinate system where decimals positions are not possible to represent
+        Some((((width as f32) / 2.0).ceil() * 2.0) as usize)
     }
 
     fn height(&self, _ctx: &BareRenderCtx) -> Option<usize> {
@@ -112,7 +118,7 @@ impl Render<BareRenderCtx> for Arc<Participant> {
     }
 
     fn render<D: Draw>(&self, canvas: &mut D, _ctx: &BareRenderCtx) -> DrawResult {
-        let Rect { width, height, .. } = canvas.bounds();
+        let Rect { width, .. } = canvas.bounds();
         let name_len = self.name.graphemes(true).count();
         let mut repr = String::from("");
         let segments = [
@@ -120,11 +126,11 @@ impl Render<BareRenderCtx> for Arc<Participant> {
             &"─".repeat(width - 2),
             "┐",
             "\n",
-            &"│".repeat(height - 2),
-            &" ".repeat(width - name_len - 3),
+            "│",
+            &" ".repeat(1),
             &self.name,
             &" ".repeat(width - name_len - 3),
-            &"│".repeat(height - 2),
+            "│",
             "\n",
             "└",
             &"─".repeat(width - 2),
@@ -163,12 +169,15 @@ impl MessageRenderCtx {
 impl Render<MessageRenderCtx> for Message {
     fn width(&self, ctx: &MessageRenderCtx) -> Option<usize> {
         let len = self.payload.graphemes(true).count();
-        match ctx.is_loop() {
+        let width = match ctx.is_loop() {
             // Put the text to the right of the loop arrow + some spacing
-            true => Some(len + 3 + 3),
+            true => len + 3 + 3,
             // Reserve enough space for the arrow + some spacing
-            false => Some(len + 4),
-        }
+            false => len + 4,
+        };
+        // Ensure that the width is divisible by two to avoid decimals as we are rendering onto a
+        // integer based coordinate system where decimals positions are not possible to represent
+        Some((((width as f32) / 2.0).ceil() * 2.0) as usize)
     }
 
     fn height(&self, ctx: &MessageRenderCtx) -> Option<usize> {
@@ -181,6 +190,7 @@ impl Render<MessageRenderCtx> for Message {
     fn render<D: Draw>(&self, canvas: &mut D, ctx: &MessageRenderCtx) -> DrawResult {
         let Rect { width, .. } = canvas.bounds();
         let payload = &self.payload;
+        let len = payload.graphemes(true).count();
 
         match ctx.is_loop() {
             true => {
@@ -189,10 +199,14 @@ impl Render<MessageRenderCtx> for Message {
                     0,
                     &["─┐".to_string(), " │".to_string(), "◀┘".to_string()],
                 )?;
-                canvas.draw(3, 1, &[payload.to_string()])?;
+                let spacer = " ".repeat(len);
+                canvas.draw(
+                    3,
+                    0,
+                    &[spacer.to_owned(), payload.to_string(), spacer.to_owned()],
+                )?;
             }
             false => {
-                let len = payload.graphemes(true).count();
                 let left_padding = ((width - len) / 2) as usize;
 
                 let mut arrow = "─".repeat(width - 2);

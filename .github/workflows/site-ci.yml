@@ -1,0 +1,83 @@
+name: CI (site)
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: site/
+
+      - name: Run the linters
+        run: npm run lint
+        working-directory: site/
+
+  deploy:
+    name: Deploy
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+
+      - name: Setup cache for Rust
+        uses: Swatinem/rust-cache@v1
+
+      - name: Install wasm-pack
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: wasm-pack
+
+      - name: Build diagwiz for wasm
+        run: wasm-pack build --release --target web
+        working-directory: site/diagwiz/
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install Node dependencies
+        run: npm ci
+        working-directory: site/
+
+      - name: Link diagwiz for wasm
+        run: npm link ./diagwiz/pkg
+        working-directory: site/
+
+      - name: Build the site
+        run: npm run build
+        working-directory: site/
+
+      - name: Add the .nojekyll marker
+        run: touch build/.nojekyll
+        working-directory: site/
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          branch: gh-pages
+          folder: site/build/

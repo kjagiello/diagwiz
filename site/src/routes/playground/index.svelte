@@ -20,7 +20,7 @@ alias ali = "Alice"
 
 ali->Bob: "Hello!"
 Bob->Bob: "(Bob thinks)"
-Bob->ali: "Hello back!"
+Bob-->ali: "Hello back!"
 `.trim();
   let initialContent: string;
 

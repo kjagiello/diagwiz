@@ -23,8 +23,9 @@ string_char = {
     | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
 }
 
+edge = { "-->" | "->" | "<--" | "<-" }
 alias = { ^"alias " ~ identifier ~ "=" ~ string }
-pair = { identifier ~ "->" ~ identifier ~ (":" ~ string)? }
+pair = { identifier ~ edge ~ identifier ~ (":" ~ string)? }
 
 expr = _{ alias | pair }
 main = { SOI ~ ((expr? ~ NEWLINE)* ~ EOI) | (expr? ~ EOI) }

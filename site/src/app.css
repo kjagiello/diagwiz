@@ -1,6 +1,17 @@
 @font-face {
-  font-family: "RedHatDisplay-Bold";
-  src: url("/fonts/RedHatDisplay-Bold.ttf") format("truetype");
+  font-family: "RedHatDisplay";
+  font-weight: bold;
+  src:
+    local("Red Hat Display Bold"),
+    url("/fonts/RedHatDisplay-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Menlo";
+  font-weight: normal;
+  src:
+    local("Menlo Regular"),
+    url("/fonts/Menlo-Regular.ttf") format("truetype");
 }
 
 :root {
@@ -30,7 +41,8 @@ body {
 }
 
 pre {
-  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  font-family: Menlo, monospace;
+  font-weight: normal;
 }
 
 svg {

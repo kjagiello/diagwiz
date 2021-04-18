@@ -70,8 +70,8 @@ pub fn render(diag: parser::SequenceDiagram) -> String {
             target: participants.get(&message.target).unwrap().clone(),
             payload: message.payload,
             edge_style: match message.edge_style {
-                parser::EdgeStyle::Single => layout::EdgeStyle::Single,
-                parser::EdgeStyle::Double => layout::EdgeStyle::Double,
+                parser::EdgeStyle::Continuous => layout::EdgeStyle::Continuous,
+                parser::EdgeStyle::Dashed => layout::EdgeStyle::Dashed,
             },
         })
     }

@@ -151,8 +151,8 @@ impl Render<BareRenderCtx> for Arc<Participant> {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum EdgeStyle {
-    Single,
-    Double,
+    Continuous,
+    Dashed,
 }
 
 pub struct Message {
@@ -216,8 +216,8 @@ impl Render<MessageRenderCtx> for Message {
             false => {
                 let left_padding = ((width - len) / 2) as usize;
                 let arrow_char = match self.edge_style {
-                    EdgeStyle::Single => '─',
-                    EdgeStyle::Double => '-',
+                    EdgeStyle::Continuous => '─',
+                    EdgeStyle::Dashed => '-',
                 };
 
                 let mut arrow = arrow_char.to_string().repeat(width - 2);
@@ -470,19 +470,19 @@ mod test {
             source: participant_alice.clone(),
             target: participant_bob.clone(),
             payload: "hello".to_string(),
-            edge_style: EdgeStyle::Single,
+            edge_style: EdgeStyle::Continuous,
         });
         layout.add_message(Message {
             source: participant_bob.clone(),
             target: participant_alice.clone(),
             payload: "hello back".to_string(),
-            edge_style: EdgeStyle::Single,
+            edge_style: EdgeStyle::Continuous,
         });
         layout.add_message(Message {
             source: participant_bob.clone(),
             target: participant_bob.clone(),
             payload: "who am i?".to_string(),
-            edge_style: EdgeStyle::Double,
+            edge_style: EdgeStyle::Dashed,
         });
         let output = layout.render();
         assert!(output.len() > 0);

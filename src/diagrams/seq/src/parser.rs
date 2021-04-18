@@ -6,8 +6,8 @@ pub struct SequenceDiagramParser;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum EdgeStyle {
-    Single,
-    Double,
+    Continuous,
+    Dashed,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -18,10 +18,10 @@ enum EdgeDirection {
 
 fn parse_edge(edge: &str) -> Result<(EdgeStyle, EdgeDirection), ParserError> {
     match edge {
-        "->" => Ok((EdgeStyle::Single, EdgeDirection::Right)),
-        "-->" => Ok((EdgeStyle::Double, EdgeDirection::Right)),
-        "<-" => Ok((EdgeStyle::Single, EdgeDirection::Left)),
-        "<--" => Ok((EdgeStyle::Double, EdgeDirection::Left)),
+        "->" => Ok((EdgeStyle::Continuous, EdgeDirection::Right)),
+        "-->" => Ok((EdgeStyle::Dashed, EdgeDirection::Right)),
+        "<-" => Ok((EdgeStyle::Continuous, EdgeDirection::Left)),
+        "<--" => Ok((EdgeStyle::Dashed, EdgeDirection::Left)),
         _ => Err(ParserError::SyntaxError("Invalid edge".to_string())),
     }
 }
@@ -180,10 +180,10 @@ mod test {
     fn parse_message_distinguishes_edge_style() {
         let data = r#"a->b"#;
         let result = diagram(String::from(data)).unwrap();
-        assert_eq!(result.messages[0].edge_style, EdgeStyle::Single);
+        assert_eq!(result.messages[0].edge_style, EdgeStyle::Continuous);
         let data = r#"a-->b"#;
         let result = diagram(String::from(data)).unwrap();
-        assert_eq!(result.messages[0].edge_style, EdgeStyle::Double);
+        assert_eq!(result.messages[0].edge_style, EdgeStyle::Dashed);
     }
 
     #[test]

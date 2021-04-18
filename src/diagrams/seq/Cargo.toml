@@ -11,3 +11,6 @@ cassowary = "~0.3.0"
 pest = "~2.1"
 pest_derive = "~2.1"
 unicode-segmentation = "~1.7.1"
+
+[dev-dependencies]
+pretty_assertions = "~0.7"

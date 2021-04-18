@@ -3,6 +3,11 @@
   src: url("/fonts/RedHatDisplay-Bold.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "SFMono-Regular";
+  src: url("/fonts/SFMono-Regular.ttf") format("truetype");
+}
+
 :root {
   --secondary-bg-color: #000;
   --link-color: #000;
@@ -30,7 +35,7 @@ body {
 }
 
 pre {
-  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  font-family: SFMono-Regular, monospace;
 }
 
 svg {

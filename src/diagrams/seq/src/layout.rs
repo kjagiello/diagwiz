@@ -149,10 +149,17 @@ impl Render<BareRenderCtx> for Arc<Participant> {
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum EdgeStyle {
+    Continuous,
+    Dashed,
+}
+
 pub struct Message {
     pub source: Arc<Participant>,
     pub target: Arc<Participant>,
     pub payload: String,
+    pub edge_style: EdgeStyle,
 }
 
 struct MessageRenderCtx {
@@ -208,15 +215,19 @@ impl Render<MessageRenderCtx> for Message {
             }
             false => {
                 let left_padding = ((width - len) / 2) as usize;
+                let arrow_char = match self.edge_style {
+                    EdgeStyle::Continuous => '─',
+                    EdgeStyle::Dashed => '-',
+                };
 
-                let mut arrow = "─".repeat(width - 2);
+                let mut arrow = arrow_char.to_string().repeat(width - 2);
                 match ctx.source_idx > ctx.target_idx {
                     true => {
-                        arrow.push('─');
+                        arrow.push(arrow_char);
                         arrow.insert(0, '◀');
                     }
                     false => {
-                        arrow.insert(0, '─');
+                        arrow.insert(0, arrow_char);
                         arrow.push('▶');
                     }
                 }
@@ -459,16 +470,19 @@ mod test {
             source: participant_alice.clone(),
             target: participant_bob.clone(),
             payload: "hello".to_string(),
+            edge_style: EdgeStyle::Continuous,
         });
         layout.add_message(Message {
             source: participant_bob.clone(),
             target: participant_alice.clone(),
             payload: "hello back".to_string(),
+            edge_style: EdgeStyle::Continuous,
         });
         layout.add_message(Message {
             source: participant_bob.clone(),
             target: participant_bob.clone(),
             payload: "who am i?".to_string(),
+            edge_style: EdgeStyle::Dashed,
         });
         let output = layout.render();
         assert!(output.len() > 0);

@@ -5,6 +5,28 @@ use pest::Parser;
 pub struct SequenceDiagramParser;
 
 #[derive(Debug, Clone, PartialEq)]
+pub enum EdgeStyle {
+    Continuous,
+    Dashed,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+enum EdgeDirection {
+    Left,
+    Right,
+}
+
+fn parse_edge(edge: &str) -> Result<(EdgeStyle, EdgeDirection), ParserError> {
+    match edge {
+        "->" => Ok((EdgeStyle::Continuous, EdgeDirection::Right)),
+        "-->" => Ok((EdgeStyle::Dashed, EdgeDirection::Right)),
+        "<-" => Ok((EdgeStyle::Continuous, EdgeDirection::Left)),
+        "<--" => Ok((EdgeStyle::Dashed, EdgeDirection::Left)),
+        _ => Err(ParserError::SyntaxError("Invalid edge".to_string())),
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct Alias {
     /// The ID of the node
     pub id: String,
@@ -16,6 +38,8 @@ pub struct Alias {
 pub struct Message {
     /// The sender of the message
     pub source: String,
+    /// The style of the message arrow
+    pub edge_style: EdgeStyle,
     /// The recipient of the message
     pub target: String,
     /// The edge label
@@ -56,11 +80,19 @@ pub fn diagram(input: String) -> Result<SequenceDiagram, ParserError> {
                         });
                     }
                     Rule::pair => {
-                        // { name ~ "->" ~ name ~ ":" ~ string }
+                        // { name ~ edge ~ name ~ ":" ~ string }
                         let mut inner_rules = stmt.into_inner();
 
                         let source: &str = inner_rules.next().unwrap().as_str();
+                        let edge: &str = inner_rules.next().unwrap().as_str();
+
+                        // Swap source and target if needed
+                        let (edge_style, edge_direction) = parse_edge(edge)?;
                         let target: &str = inner_rules.next().unwrap().as_str();
+                        let (source, target) = match edge_direction {
+                            EdgeDirection::Right => (source, target),
+                            EdgeDirection::Left => (target, source),
+                        };
                         let label: &str = match inner_rules.peek() {
                             Some(_) => inner_rules.next().unwrap().as_str(),
                             None => "",
@@ -70,6 +102,7 @@ pub fn diagram(input: String) -> Result<SequenceDiagram, ParserError> {
                             source: String::from(source),
                             target: String::from(target),
                             payload: String::from(label),
+                            edge_style,
                         });
                     }
                     Rule::EOI => (),
@@ -114,6 +147,18 @@ mod test {
     }
 
     #[test]
+    fn parse_handles_directions() {
+        let data = "a->b";
+        let result = diagram(String::from(data)).unwrap();
+        assert_eq!(result.messages[0].source, "a");
+        assert_eq!(result.messages[0].target, "b");
+        let data = "a<-b";
+        let result = diagram(String::from(data)).unwrap();
+        assert_eq!(result.messages[0].source, "b");
+        assert_eq!(result.messages[0].target, "a");
+    }
+
+    #[test]
     fn parse_message_payload_with_unicode() {
         let data = r#"a->b: "𩸽""#;
         let result = diagram(String::from(data)).unwrap();
@@ -129,6 +174,16 @@ mod test {
         let result = diagram(String::from(data)).unwrap();
         assert_eq!(result.messages.len(), 1);
         assert_eq!(result.messages[0].payload, "\"hello\"");
+    }
+
+    #[test]
+    fn parse_message_distinguishes_edge_style() {
+        let data = r#"a->b"#;
+        let result = diagram(String::from(data)).unwrap();
+        assert_eq!(result.messages[0].edge_style, EdgeStyle::Continuous);
+        let data = r#"a-->b"#;
+        let result = diagram(String::from(data)).unwrap();
+        assert_eq!(result.messages[0].edge_style, EdgeStyle::Dashed);
     }
 
     #[test]

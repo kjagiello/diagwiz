@@ -41,7 +41,8 @@
 
   .logo {
     font-size: 1.9em;
-    font-family: "RedHatDisplay-Bold";
+    font-family: RedHatDisplay;
+    font-weight: bold;
   }
 
   .logo img {

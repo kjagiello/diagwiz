@@ -23,7 +23,7 @@ macro_rules! assert_renders {
 #[test]
 fn test_loop() {
     assert_renders!(
-        diagram_seq::transform("a->a".to_string()),
+        diagram_seq::transform("a->a"),
         concat!(
             "┌────┐     \n",
             "│ a  │     \n",
@@ -42,7 +42,7 @@ fn test_loop() {
 #[test]
 fn test_two_participants_with_continuous_line() {
     assert_renders!(
-        diagram_seq::transform("a->b".to_string()),
+        diagram_seq::transform("a->b"),
         concat!(
             "┌────┐ ┌────┐ \n",
             "│ a  │ │ b  │ \n",
@@ -60,7 +60,7 @@ fn test_two_participants_with_continuous_line() {
 #[test]
 fn test_two_participants_with_dashed_line() {
     assert_renders!(
-        diagram_seq::transform("a-->b".to_string()),
+        diagram_seq::transform("a-->b"),
         concat!(
             "┌────┐ ┌────┐ \n",
             "│ a  │ │ b  │ \n",

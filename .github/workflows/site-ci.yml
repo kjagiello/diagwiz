@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -30,6 +31,7 @@ jobs:
   deploy:
     name: Deploy
     needs: lint
+    if: ${{ github.event == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources

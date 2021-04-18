@@ -1,17 +1,13 @@
 @font-face {
   font-family: "RedHatDisplay";
   font-weight: bold;
-  src:
-    local("Red Hat Display Bold"),
-    url("/fonts/RedHatDisplay-Bold.ttf") format("truetype");
+  src: local("Red Hat Display Bold"), url("/fonts/RedHatDisplay-Bold.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "Menlo";
   font-weight: normal;
-  src:
-    local("Menlo Regular"),
-    url("/fonts/Menlo-Regular.ttf") format("truetype");
+  src: local("Menlo Regular"), url("/fonts/Menlo-Regular.ttf") format("truetype");
 }
 
 :root {

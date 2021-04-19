@@ -51,7 +51,7 @@ pub trait Draw {
     fn bounds(&self) -> &Rect;
     fn buffer_mut(&mut self) -> &mut CanvasBuffer;
 
-    fn draw(&mut self, left: usize, top: usize, rows: &[String]) -> DrawResult {
+    fn draw(&mut self, left: usize, top: usize, rows: &[&str]) -> DrawResult {
         // TODO: ensure that the draw cannot happen outside of the region
         let bounds = self.bounds();
         let max_length = rows.iter().map(|s| s.chars().count()).max().unwrap();
@@ -146,10 +146,7 @@ mod tests {
     #[test]
     fn overlapping_text() {
         let mut canvas = TextCanvas::new(5, 5);
-        let data: Vec<String> = ["123", "456", "789"]
-            .iter()
-            .map(|s| s.to_string())
-            .collect();
+        let data = ["123", "456", "789"];
         canvas.draw(0, 0, &data).expect("Draw failed");
         canvas.draw(2, 2, &data).expect("Draw failed");
         #[rustfmt::skip]
@@ -165,20 +162,14 @@ mod tests {
 
     #[test]
     fn horizontal_overflow() {
-        let data: Vec<String> = ["123", "456", "789"]
-            .iter()
-            .map(|s| s.to_string())
-            .collect();
+        let data = ["123", "456", "789"];
         let mut canvas = TextCanvas::new(2, 3);
         assert_eq!(canvas.draw(0, 0, &data), Err(DrawError::HorizontalOverflow));
     }
 
     #[test]
     fn vertical_overflow() {
-        let data: Vec<String> = ["123", "456", "789"]
-            .iter()
-            .map(|s| s.to_string())
-            .collect();
+        let data = ["123", "456", "789"];
         let mut canvas = TextCanvas::new(3, 2);
         assert_eq!(canvas.draw(0, 0, &data), Err(DrawError::VerticalOverflow));
     }
@@ -189,11 +180,11 @@ mod tests {
         // and ensure that the replacement process respects the character boundaries.
         let mut canvas = TextCanvas::new(1, 1);
 
-        let data = vec!["𩸽".into()];
+        let data = ["𩸽"];
         canvas.draw(0, 0, &data).expect("Draw failed");
         assert_eq!(canvas.content(), data.join("\n"));
 
-        let data = vec!["a".into()];
+        let data = ["a"];
         canvas.draw(0, 0, &data).expect("Draw failed");
         assert_eq!(canvas.content(), data.join("\n"));
     }
@@ -204,18 +195,18 @@ mod tests {
 
         // Paint in a one pixel region
         let mut region1 = canvas.region(0, 0, 1, 1);
-        let data = vec!["a".into()];
+        let data = ["a"];
         region1.draw(0, 0, &data).expect("Draw failed");
 
         // Paint in a different one pixel region twice
         let mut region2 = canvas.region(2, 0, 1, 1);
-        let data = vec!["z".into()];
+        let data = ["z"];
         region2.draw(0, 0, &data).expect("Draw failed");
-        let data = vec!["b".into()];
+        let data = ["b"];
         region2.draw(0, 0, &data).expect("Draw failed");
 
         // Inspect the canvas content
-        let expected = vec!["a b"];
+        let expected = ["a b"];
         assert_eq!(canvas.content(), expected.join("\n"));
     }
 
@@ -223,7 +214,7 @@ mod tests {
     fn region_horizontal_overflow() {
         let mut canvas = TextCanvas::new(3, 3);
         let mut region = canvas.region(0, 0, 1, 1);
-        let data = vec!["a".into()];
+        let data = ["a"];
         assert_eq!(region.draw(1, 0, &data), Err(DrawError::HorizontalOverflow));
     }
 
@@ -231,7 +222,7 @@ mod tests {
     fn region_vertical_overflow() {
         let mut canvas = TextCanvas::new(3, 3);
         let mut region = canvas.region(0, 0, 1, 1);
-        let data = vec!["a".into()];
+        let data = ["a"];
         assert_eq!(region.draw(0, 1, &data), Err(DrawError::VerticalOverflow));
     }
 }

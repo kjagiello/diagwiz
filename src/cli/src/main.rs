@@ -17,7 +17,7 @@ fn read_from_stdin() -> io::Result<String> {
     Ok(buffer)
 }
 
-fn render(input: String) -> Result<String, TransformError> {
+fn render(input: &str) -> Result<String, TransformError> {
     let output = diagram_seq::transform(input)?;
     Ok(output)
 }
@@ -30,7 +30,7 @@ fn main() -> io::Result<()> {
         .get_matches();
 
     let input = read_from_stdin()?;
-    let output = render(input);
+    let output = render(input.as_str());
     match output {
         Ok(repr) if !repr.is_empty() => println!("{}", repr),
         Ok(_) => eprintln!("Warning: No diagram was generated"),

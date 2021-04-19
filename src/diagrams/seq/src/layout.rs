@@ -140,11 +140,7 @@ impl Render<BareRenderCtx> for Arc<Participant> {
             repr.push_str(segment);
         }
 
-        canvas.draw(
-            0,
-            0,
-            &repr.split('\n').map(|s| s.to_string()).collect::<Vec<_>>(),
-        )?;
+        canvas.draw(0, 0, &repr.split('\n').collect::<Vec<_>>())?;
         Ok(())
     }
 }
@@ -201,17 +197,9 @@ impl Render<MessageRenderCtx> for Message {
 
         match ctx.is_loop() {
             true => {
-                canvas.draw(
-                    0,
-                    0,
-                    &["─┐".to_string(), " │".to_string(), "◀┘".to_string()],
-                )?;
+                canvas.draw(0, 0, &["─┐", " │", "◀┘"])?;
                 let spacer = " ".repeat(len);
-                canvas.draw(
-                    3,
-                    0,
-                    &[spacer.to_owned(), payload.to_string(), spacer.to_owned()],
-                )?;
+                canvas.draw(3, 0, &[spacer.as_str(), payload.as_str(), spacer.as_str()])?;
             }
             false => {
                 let left_padding = ((width - len) / 2) as usize;
@@ -232,8 +220,8 @@ impl Render<MessageRenderCtx> for Message {
                     }
                 }
 
-                canvas.draw(left_padding, 0, &[payload.to_string()])?;
-                canvas.draw(0, 1, &[arrow])?;
+                canvas.draw(left_padding, 0, &[payload.as_str()])?;
+                canvas.draw(0, 1, &[arrow.as_str()])?;
             }
         }
 
@@ -404,7 +392,7 @@ impl Layout {
         let mut canvas = TextCanvas::new(max_right, max_bottom);
 
         // Draw the participants and their lifelines
-        let lifeline = vec!["│".to_string(); max_bottom];
+        let lifeline = vec!["│"; max_bottom];
         for node in &self.participants {
             let coords = node.coords(&self.solver);
             canvas

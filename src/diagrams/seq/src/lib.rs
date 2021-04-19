@@ -16,7 +16,7 @@ impl From<parser::ParserError> for TransformError {
     }
 }
 
-pub fn transform(input: String) -> Result<String, TransformError> {
+pub fn transform(input: &str) -> Result<String, TransformError> {
     let diagram = parser::diagram(input)?;
     let output = renderer::render(diagram);
     Ok(output)
@@ -31,7 +31,7 @@ mod tests {
         alias b="Bar"
         a->b:"hey"
         "#;
-        let result = super::transform(String::from(data)).unwrap();
+        let result = super::transform(data).unwrap();
         assert_eq!(result.contains("Foo"), true);
         assert_eq!(result.contains("Bar"), true);
     }

@@ -59,8 +59,8 @@ pub enum ParserError {
     SyntaxError(String),
 }
 
-pub fn diagram(input: String) -> Result<SequenceDiagram, ParserError> {
-    let ast = SequenceDiagramParser::parse(Rule::main, input.as_str());
+pub fn diagram(input: &str) -> Result<SequenceDiagram, ParserError> {
+    let ast = SequenceDiagramParser::parse(Rule::main, input);
     match ast {
         // TODO: rename
         Ok(mut ast) => {
@@ -122,7 +122,7 @@ mod test {
     #[test]
     fn parse_diagram_empty() {
         let data = "";
-        let result = diagram(String::from(data)).unwrap();
+        let result = diagram(data).unwrap();
         assert_eq!(result.aliases.len(), 0);
         assert_eq!(result.messages.len(), 0);
     }
@@ -133,7 +133,7 @@ mod test {
         # test
         // comment
         "#;
-        let result = diagram(String::from(data)).unwrap();
+        let result = diagram(data).unwrap();
         assert_eq!(result.aliases.len(), 0);
         assert_eq!(result.messages.len(), 0);
     }
@@ -141,7 +141,7 @@ mod test {
     #[test]
     fn parse_empty_message() {
         let data = "a->b";
-        let result = diagram(String::from(data)).unwrap();
+        let result = diagram(data).unwrap();
         assert_eq!(result.messages.len(), 1);
         assert_eq!(result.messages[0].payload, "");
     }
@@ -149,11 +149,11 @@ mod test {
     #[test]
     fn parse_handles_directions() {
         let data = "a->b";
-        let result = diagram(String::from(data)).unwrap();
+        let result = diagram(data).unwrap();
         assert_eq!(result.messages[0].source, "a");
         assert_eq!(result.messages[0].target, "b");
         let data = "a<-b";
-        let result = diagram(String::from(data)).unwrap();
+        let result = diagram(data).unwrap();
         assert_eq!(result.messages[0].source, "b");
         assert_eq!(result.messages[0].target, "a");
     }
@@ -161,7 +161,7 @@ mod test {
     #[test]
     fn parse_message_payload_with_unicode() {
         let data = r#"a->b: "𩸽""#;
-        let result = diagram(String::from(data)).unwrap();
+        let result = diagram(data).unwrap();
         assert_eq!(result.messages.len(), 1);
         assert_eq!(result.messages[0].payload, "𩸽");
     }
@@ -171,7 +171,7 @@ mod test {
     #[should_panic]
     fn parse_message_payload_with_escape_sequences() {
         let data = "a->b: \"\\\"hello\\\"\"\n";
-        let result = diagram(String::from(data)).unwrap();
+        let result = diagram(data).unwrap();
         assert_eq!(result.messages.len(), 1);
         assert_eq!(result.messages[0].payload, "\"hello\"");
     }
@@ -179,45 +179,45 @@ mod test {
     #[test]
     fn parse_message_distinguishes_edge_style() {
         let data = r#"a->b"#;
-        let result = diagram(String::from(data)).unwrap();
+        let result = diagram(data).unwrap();
         assert_eq!(result.messages[0].edge_style, EdgeStyle::Continuous);
         let data = r#"a-->b"#;
-        let result = diagram(String::from(data)).unwrap();
+        let result = diagram(data).unwrap();
         assert_eq!(result.messages[0].edge_style, EdgeStyle::Dashed);
     }
 
     #[test]
     fn disallows_keyword_identifiers() {
         let data = "alias alias = \"aliasson\"";
-        let result = diagram(String::from(data));
+        let result = diagram(data);
         assert!(result.is_err());
     }
 
     #[test]
     fn disallows_idedntifiers_with_numeric_prefix() {
         let data = "alias 1a = \"b\"";
-        let result = diagram(String::from(data));
+        let result = diagram(data);
         assert!(result.is_err());
     }
 
     #[test]
     fn allows_identifier_with_keyword_substring() {
         let data = "alias aliassson = \"aliasson\"";
-        let result = diagram(String::from(data));
+        let result = diagram(data);
         assert!(!result.is_err());
     }
 
     #[test]
     fn allows_underscores_in_identifiers() {
         let data = "alias _a_b_ = \"c\"";
-        let result = diagram(String::from(data));
+        let result = diagram(data);
         assert!(!result.is_err());
     }
 
     #[test]
     fn requires_a_space_after_alias_keyword() {
         let data = "aliasabc = \"d\"";
-        let result = diagram(String::from(data));
+        let result = diagram(data);
         assert!(result.is_err());
     }
 }

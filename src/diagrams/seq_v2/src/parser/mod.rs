@@ -181,7 +181,6 @@ fn parse_attr_value(pair: Option<pest::iterators::Pair<Rule>>) -> ParseResult<as
 }
 
 fn parse_atom(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Atom> {
-    println!("atom found: {:#?}", pair);
     let span = pair.as_span().into();
     let inner_pair = pair
         .into_inner()

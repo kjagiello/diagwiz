@@ -161,8 +161,7 @@ fn parse_attrs(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Attrs> {
                     .map(|apair| {
                         let mut inner_rules = apair.into_inner();
                         let key = parse_string(inner_rules.next().unwrap())?;
-                        let value_pair = inner_rules.next();
-                        let value = parse_attr_value(value_pair)?;
+                        let value = parse_attr_value(inner_rules.next())?;
                         Ok((key, value))
                     })
                     .collect::<ParseResult<HashMap<_, _>>>()?,

@@ -1,11 +1,15 @@
 // TODO: remove
 #![allow(dead_code)]
 
-mod ast;
 use std::collections::HashMap;
 
 use pest::error::Error;
 use pest::Parser;
+
+#[cfg(test)]
+mod tests;
+
+mod ast;
 
 #[derive(Parser)]
 #[grammar = "parser/grammar.pest"]
@@ -110,6 +114,7 @@ fn parse_stmt(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Stmt> {
                     span: arrow.as_span().into(),
                     head_left: None,
                     head_right: None,
+                    line: ast::ArrowLine::Solid,
                 },
                 attrs,
             })
@@ -176,26 +181,5 @@ fn parse_boolean(pair: pest::iterators::Pair<Rule>) -> ParseResult<bool> {
         "true" => Ok(true),
         "false" => Ok(false),
         value => unreachable!("Invalid boolean value: {:#?}", value),
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_participant() {
-        let data = r#"
-        a;
-        b [a=false];
-        c [label="C", padding="1"];
-
-        a->b [hide_arrow];
-        b->c [label="test"];
-        "#;
-        let result = super::parse(data);
-        match result {
-            Ok(output) => println!("{:#?}", output),
-            Err(super::ParserError::SyntaxError(e)) => println!("{}", e),
-        };
-        assert_eq!(true, false);
     }
 }

@@ -127,6 +127,7 @@ dependencies = [
  "ascii_canvas",
  "cassowary",
  "diagram_base",
+ "maplit",
  "pest",
  "pest_derive",
  "pretty_assertions",

@@ -81,10 +81,7 @@ fn parse_stmt(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Stmt> {
 
             Ok(ast::Stmt::Participant {
                 span: span.into(),
-                ident: ast::Str {
-                    span: ident.as_span().into(),
-                    str: ident.as_str(),
-                },
+                ident: parse_ident(ident)?,
                 attrs,
             })
         }
@@ -102,14 +99,8 @@ fn parse_stmt(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Stmt> {
             let (head_left, head_right) = parse_arrow_heads(arrow.as_str())?;
             Ok(ast::Stmt::Message {
                 span: span.into(),
-                ident1: ast::Str {
-                    span: ident1.as_span().into(),
-                    str: ident1.as_str(),
-                },
-                ident2: ast::Str {
-                    span: ident2.as_span().into(),
-                    str: ident2.as_str(),
-                },
+                ident1: parse_ident(ident1)?,
+                ident2: parse_ident(ident2)?,
                 arrow: ast::Arrow {
                     span: arrow.as_span().into(),
                     line: parse_arrow_line(arrow.as_str())?,
@@ -121,6 +112,20 @@ fn parse_stmt(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Stmt> {
         }
         rule => unreachable!("Unhandled rule: {:#?}", rule),
     }
+}
+
+fn parse_ident(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Str> {
+    Ok(ast::Str {
+        span: pair.as_span().into(),
+        str: pair.as_str(),
+    })
+}
+
+fn parse_string(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Str> {
+    Ok(ast::Str {
+        span: pair.as_span().into(),
+        str: pair.as_str(),
+    })
 }
 
 fn parse_arrow_heads(line: &str) -> ParseResult<(Option<ast::ArrowHead>, Option<ast::ArrowHead>)> {
@@ -155,14 +160,7 @@ fn parse_attrs(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Attrs> {
                     .into_inner()
                     .map(|apair| {
                         let mut inner_rules = apair.into_inner();
-
-                        let key = {
-                            let pair = inner_rules.next().unwrap();
-                            ast::Str {
-                                span: pair.as_span().into(),
-                                str: pair.as_str(),
-                            }
-                        };
+                        let key = parse_string(inner_rules.next().unwrap())?;
                         let value_pair = inner_rules.next();
                         let value = parse_attr_value(value_pair)?;
                         Ok((key, value))

@@ -53,9 +53,12 @@ pub enum ArrowLine {
 /// Represents a message arrow
 #[derive(Debug)]
 pub struct Arrow {
-    pub head_source: ArrowHead,
+    pub span: Span,
+    pub head_left: Option<ArrowHead>,
+    pub head_right: Option<ArrowHead>,
 }
 
+// Attributes
 #[derive(Debug)]
 pub struct Atom<'a> {
     pub span: Span,
@@ -93,10 +96,10 @@ pub enum Stmt<'a> {
     /// Represents a message that was sent from one participant to another
     Message {
         span: Span,
-        source: Str<'a>,
-        target: Str<'a>,
+        ident1: Str<'a>,
+        ident2: Str<'a>,
         arrow: Arrow,
-        body: Str<'a>,
+        attrs: Option<Attrs<'a>>,
     },
     Separator {
         span: Span,

@@ -39,7 +39,6 @@ impl<'a> Eq for Str<'a> {}
 #[cfg_attr(test, derive(PartialEq))]
 #[derive(Debug)]
 pub enum ArrowHead {
-    None,
     Solid,
 }
 

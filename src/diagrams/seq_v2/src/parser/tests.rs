@@ -163,7 +163,7 @@ fn test_message() {
             arrow: ast::Arrow {
                 span: ast::Span { start: 1, end: 3 },
                 head_left: None,
-                head_right: None,
+                head_right: Some(ast::ArrowHead::Solid),
                 line: ast::ArrowLine::Solid,
             },
             attrs: Some(ast::Attrs {

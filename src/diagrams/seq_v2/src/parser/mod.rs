@@ -99,7 +99,7 @@ fn parse_stmt(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Stmt> {
                 Some(rule) => Some(parse_attrs(rule)?),
                 None => None,
             };
-
+            let (head_left, head_right) = parse_arrow_heads(arrow.as_str())?;
             Ok(ast::Stmt::Message {
                 span: span.into(),
                 ident1: ast::Str {
@@ -112,15 +112,37 @@ fn parse_stmt(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Stmt> {
                 },
                 arrow: ast::Arrow {
                     span: arrow.as_span().into(),
-                    head_left: None,
-                    head_right: None,
-                    line: ast::ArrowLine::Solid,
+                    line: parse_arrow_line(arrow.as_str())?,
+                    head_left,
+                    head_right,
                 },
                 attrs,
             })
         }
         rule => unreachable!("Unhandled rule: {:#?}", rule),
     }
+}
+
+fn parse_arrow_heads(line: &str) -> ParseResult<(Option<ast::ArrowHead>, Option<ast::ArrowHead>)> {
+    let result = match line {
+        "-->" => (None, Some(ast::ArrowHead::Solid)),
+        "->" => (None, Some(ast::ArrowHead::Solid)),
+        "<--" => (Some(ast::ArrowHead::Solid), None),
+        "<-" => (Some(ast::ArrowHead::Solid), None),
+        v => unreachable!("Unsupported arrow head: {:#?}", v),
+    };
+    Ok(result)
+}
+
+fn parse_arrow_line(line: &str) -> ParseResult<ast::ArrowLine> {
+    let result = match line {
+        "-->" => ast::ArrowLine::Dashed,
+        "->" => ast::ArrowLine::Solid,
+        "<--" => ast::ArrowLine::Dashed,
+        "<-" => ast::ArrowLine::Solid,
+        v => unreachable!("Unsupported arrow line: {:#?}", v),
+    };
+    Ok(result)
 }
 
 fn parse_attrs(pair: pest::iterators::Pair<Rule>) -> ParseResult<ast::Attrs> {

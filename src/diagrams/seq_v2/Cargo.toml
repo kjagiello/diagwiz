@@ -1,0 +1,16 @@
+[package]
+name = "diagram_seq_v2"
+version = "0.1.0"
+authors = ["Krzysztof Jagiello <me@kjagiello.com>"]
+edition = "2018"
+
+[dependencies]
+ascii_canvas = { path = "../../ascii_canvas", version = "0.1.0" }
+diagram_base = { path = "../base", version = "0.1.0" }
+cassowary = "~0.3.0"
+pest = "~2.1"
+pest_derive = "~2.1"
+unicode-segmentation = "~1.7.1"
+
+[dev-dependencies]
+pretty_assertions = "~0.7"

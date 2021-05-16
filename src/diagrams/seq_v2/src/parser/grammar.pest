@@ -1,0 +1,45 @@
+WHITESPACE = _{ " " }
+COMMENT = _{ ("#" | "//") ~ (!"\n" ~ ANY)* }
+
+// A workaround for EOI showing up among pairs
+// Issue: https://github.com/pest-parser/pest/issues/304
+eoi = _{ !ANY }
+
+// Make sure that that no keyword in this rule is a prefix of a any
+// succeeding keyword. For example { "alias" | "aliasson" } will never match
+// "aliassion"
+_keyword = @{ "alias" }
+keyword = @{ _keyword }
+
+// Allow any identifier that is not a keyword. Also, identifiers are not begin
+// with a digit.
+identifier = @{
+    !(keyword ~ !ASCII_ALPHA)
+    ~ (ASCII_ALPHA | "_")
+    ~ (ASCII_ALPHANUMERIC | "_")*
+}
+
+string = { "\"" ~ string_inner ~ "\"" }
+string_inner = @{ string_char* }
+string_char = {
+    !("\"" | "\\") ~ ANY
+    | "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
+    | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+}
+
+edge = { "-->" | "->" | "<--" | "<-" }
+
+// Atoms
+boolean = { "true" | "false" }
+atom = { boolean | string }
+
+// Custom attributes
+attr = { identifier ~ ("=" ~ atom)? }
+attrs = { "[" ~ (attr ~ ",")* ~ attr{1}? ~ "]" }
+
+participant = { identifier ~ attrs? }
+message = { identifier ~ edge ~ identifier ~ attrs? }
+separator = { "==" ~ string ~ "==" }
+
+stmt = _{ (separator | participant | message) ~ ";" }
+main = _{ SOI ~ NEWLINE* ~ (stmt ~ NEWLINE+) * ~ stmt? ~ eoi }

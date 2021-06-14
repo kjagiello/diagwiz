@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-// TODO: extract into a separate utility crate
+// TODO: Move Span into parser utilities
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Span {
     pub start: usize,

@@ -53,12 +53,13 @@ impl<'a> SeqDiag<'a> {
                 .stmts
                 .iter()
                 .filter_map(|stmt| match stmt {
-                    ast::Stmt::Participant { ident, attrs, span } => Some(Arc::from(Participant {
+                    ast::Stmt::Participant { ident, span, .. } => Some(Arc::from(Participant {
                         span: span.clone(),
                         ident: Spanned {
                             value: ident.str,
                             span: ident.span,
                         },
+                        // TODO: Extract the label from attrs
                         label: None,
                     })),
                     _ => None,

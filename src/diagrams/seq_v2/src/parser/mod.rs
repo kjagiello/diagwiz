@@ -3,6 +3,7 @@
 
 use std::collections::HashMap;
 
+use crate::utils::Span;
 use pest::error::Error;
 use pest::Parser;
 
@@ -49,9 +50,9 @@ impl From<Error<Rule>> for ParserError {
     }
 }
 
-impl<'i> From<pest::Span<'i>> for ast::Span {
-    fn from(span: pest::Span) -> ast::Span {
-        ast::Span {
+impl<'i> From<pest::Span<'i>> for Span {
+    fn from(span: pest::Span) -> Span {
+        Span {
             start: span.start(),
             end: span.end(),
         }

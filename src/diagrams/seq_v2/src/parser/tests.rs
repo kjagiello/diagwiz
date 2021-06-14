@@ -1,5 +1,6 @@
 use crate::parser;
 use crate::parser::ast;
+use crate::utils::Span;
 use maplit::hashmap;
 
 #[test]
@@ -10,9 +11,9 @@ fn test_participants() {
     assert_eq!(
         result.stmts[0],
         ast::Stmt::Participant {
-            span: ast::Span { start: 0, end: 1 },
+            span: Span { start: 0, end: 1 },
             ident: ast::Str {
-                span: ast::Span { start: 0, end: 1 },
+                span: Span { start: 0, end: 1 },
                 str: "a",
             },
             attrs: None,
@@ -21,9 +22,9 @@ fn test_participants() {
     assert_eq!(
         result.stmts[1],
         ast::Stmt::Participant {
-            span: ast::Span { start: 3, end: 4 },
+            span: Span { start: 3, end: 4 },
             ident: ast::Str {
-                span: ast::Span { start: 3, end: 4 },
+                span: Span { start: 3, end: 4 },
                 str: "b"
             },
             attrs: None
@@ -39,16 +40,16 @@ fn test_attr_implicit_true() {
     assert_eq!(
         result.stmts[0],
         ast::Stmt::Participant {
-            span: ast::Span { start: 0, end: 10 },
+            span: Span { start: 0, end: 10 },
             ident: ast::Str {
-                span: ast::Span { start: 0, end: 1 },
+                span: Span { start: 0, end: 1 },
                 str: "a"
             },
             attrs: Some(ast::Attrs {
-                span: ast::Span { start: 1, end: 10 },
+                span: Span { start: 1, end: 10 },
                 data: hashmap! {
                     ast::Str {
-                        span: ast::Span { start: 2, end: 9 },
+                        span: Span { start: 2, end: 9 },
                         str: "compact",
                     } => ast::AttrValue::ImplicitTrue
                 }
@@ -65,23 +66,23 @@ fn test_attr_explicit_boolean() {
     assert_eq!(
         result.stmts[0],
         ast::Stmt::Participant {
-            span: ast::Span { start: 0, end: 27 },
+            span: Span { start: 0, end: 27 },
             ident: ast::Str {
-                span: ast::Span { start: 0, end: 1 },
+                span: Span { start: 0, end: 1 },
                 str: "a"
             },
             attrs: Some(ast::Attrs {
-                span: ast::Span { start: 1, end: 27 },
+                span: Span { start: 1, end: 27 },
                 data: hashmap! {
                     ast::Str {
-                        span: ast::Span {
+                        span: Span {
                             start: 17,
                             end: 21
                         },
                         str: "bold"
                     } => ast::AttrValue::Atom(
                         ast::Atom {
-                            span: ast::Span {
+                            span: Span {
                                 start: 22,
                                 end: 26,
                             },
@@ -89,14 +90,14 @@ fn test_attr_explicit_boolean() {
                         }
                     ),
                     ast::Str {
-                        span: ast::Span {
+                        span: Span {
                             start: 2,
                             end: 9
                         },
                         str: "compact"
                     } => ast::AttrValue::Atom(
                         ast::Atom {
-                            span: ast::Span {
+                            span: Span {
                                 start: 10,
                                 end: 15
                             },
@@ -117,20 +118,20 @@ fn test_attr_str() {
     assert_eq!(
         result.stmts[0],
         ast::Stmt::Participant {
-            span: ast::Span { start: 0, end: 16 },
+            span: Span { start: 0, end: 16 },
             ident: ast::Str {
-                span: ast::Span { start: 0, end: 1 },
+                span: Span { start: 0, end: 1 },
                 str: "a"
             },
             attrs: Some(ast::Attrs {
-                span: ast::Span { start: 1, end: 16 },
+                span: Span { start: 1, end: 16 },
                 data: hashmap! {
                     ast::Str {
-                        span: ast::Span { start: 2, end: 9 },
+                        span: Span { start: 2, end: 9 },
                         str: "compact",
                     } => ast::AttrValue::Atom(
                         ast::Atom {
-                            span: ast::Span {
+                            span: Span {
                                 start: 10,
                                 end: 15
                             },
@@ -151,23 +152,23 @@ fn test_message() {
     assert_eq!(
         result.stmts[0],
         ast::Stmt::Message {
-            span: ast::Span { start: 0, end: 7 },
+            span: Span { start: 0, end: 7 },
             ident1: ast::Str {
-                span: ast::Span { start: 0, end: 1 },
+                span: Span { start: 0, end: 1 },
                 str: "a"
             },
             ident2: ast::Str {
-                span: ast::Span { start: 3, end: 4 },
+                span: Span { start: 3, end: 4 },
                 str: "b"
             },
             arrow: ast::Arrow {
-                span: ast::Span { start: 1, end: 3 },
+                span: Span { start: 1, end: 3 },
                 head_left: None,
                 head_right: Some(ast::ArrowHead::Solid),
                 line: ast::ArrowLine::Solid,
             },
             attrs: Some(ast::Attrs {
-                span: ast::Span { start: 5, end: 7 },
+                span: Span { start: 5, end: 7 },
                 data: hashmap! {}
             })
         }

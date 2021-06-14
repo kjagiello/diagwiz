@@ -9,7 +9,7 @@ use pest::Parser;
 #[cfg(test)]
 mod tests;
 
-mod ast;
+pub(crate) mod ast;
 
 #[derive(Parser)]
 #[grammar = "parser/grammar.pest"]

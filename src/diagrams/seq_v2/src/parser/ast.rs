@@ -1,12 +1,6 @@
+use crate::utils::Span;
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
-
-/// Represents a source code span
-#[derive(Debug, PartialEq)]
-pub struct Span {
-    pub start: usize,
-    pub end: usize,
-}
 
 /// Contains a diagram AST
 #[derive(Debug, Default)]
@@ -36,23 +30,20 @@ impl<'a> PartialEq for Str<'a> {
 impl<'a> Eq for Str<'a> {}
 
 /// Represent an arrowhead of a line of a message
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum ArrowHead {
     Solid,
 }
 
 /// Represents an arrow line of a message
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum ArrowLine {
     Solid,
     Dashed,
 }
 
 /// Represents a message arrow
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Arrow {
     pub span: Span,
     pub head_left: Option<ArrowHead>,
@@ -61,38 +52,33 @@ pub struct Arrow {
 }
 
 // Attributes
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Atom<'a> {
     pub span: Span,
     pub value: AtomValue<'a>,
 }
 
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum AtomValue<'a> {
     Boolean(bool),
     String(&'a str),
 }
 
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum AttrValue<'a> {
     Atom(Atom<'a>),
     /// Attributes can be implicitly set to true by only providing the attribute key
     ImplicitTrue,
 }
 
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Attrs<'a> {
     pub span: Span,
     pub data: HashMap<Str<'a>, AttrValue<'a>>,
 }
 
 /// Statements that make up the AST
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Stmt<'a> {
     /// Diagram participant with its display name
     Participant {

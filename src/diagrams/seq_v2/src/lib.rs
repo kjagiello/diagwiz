@@ -4,6 +4,7 @@ extern crate pest_derive;
 
 mod model;
 mod parser;
+mod utils;
 
 use diagram_base::TransformError;
 

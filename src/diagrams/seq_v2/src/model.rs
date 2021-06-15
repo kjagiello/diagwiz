@@ -1,37 +1,25 @@
 #![allow(dead_code)]
 
 use crate::parser::ast;
-use crate::utils::Span;
+use crate::utils::{Span, Spanned};
 use std::collections::HashMap;
-use std::ops::Deref;
 use std::sync::Arc;
 
 type Attrs<'a> = HashMap<&'a str, &'a str>;
 
-pub struct Spanned<T> {
-    pub value: T,
-    pub span: Span,
-}
-
-impl<T> Deref for Spanned<T> {
-    type Target = T;
-
-    fn deref(&self) -> &T {
-        &self.value
-    }
-}
-
+#[derive(Debug)]
 pub struct Participant<'a> {
     pub ident: Spanned<&'a str>,
     pub label: Option<Spanned<&'a str>>,
     pub span: Span,
 }
 
+#[derive(Debug)]
 pub enum Element<'a> {
     Message {
         source: Arc<Participant<'a>>,
         target: Arc<Participant<'a>>,
-        attrs: HashMap<Spanned<&'a str>, Spanned<&'a str>>,
+        payload: &'a str,
         span: Span,
     },
     Separator {
@@ -40,6 +28,7 @@ pub enum Element<'a> {
     },
 }
 
+#[derive(Debug)]
 pub struct SeqDiag<'a> {
     pub participants: Vec<Arc<Participant<'a>>>,
     pub elements: Vec<Element<'a>>,
@@ -53,14 +42,17 @@ impl<'a> SeqDiag<'a> {
                 .stmts
                 .iter()
                 .filter_map(|stmt| match stmt {
-                    ast::Stmt::Participant { ident, span, .. } => Some(Arc::from(Participant {
-                        span: span.clone(),
+                    ast::Stmt::Participant { ident, span, attrs } => Some(Arc::from(Participant {
+                        span: *span,
                         ident: Spanned {
                             value: ident.str,
                             span: ident.span,
                         },
                         // TODO: Extract the label from attrs
-                        label: None,
+                        label: attrs
+                            .as_ref()
+                            .map(|attrs| attrs.get_str("label"))
+                            .unwrap_or(None),
                     })),
                     _ => None,
                 })

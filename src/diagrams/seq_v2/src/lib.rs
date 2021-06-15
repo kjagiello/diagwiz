@@ -16,12 +16,9 @@ pub fn transform(_input: &str) -> Result<String, TransformError> {
 mod tests {
     #[test]
     fn test_smoke() {
-        let data = r#"
-        alias a="Foo"
-        alias b="Bar"
-        a->b:"hey"
-        "#;
-        let result = super::transform(data).unwrap();
-        assert_eq!(result.contains("hej"), true);
+        let data = r#"a; b[label="alice"];"#;
+        let tree = crate::parser::parse(data).unwrap();
+        let diag = crate::model::SeqDiag::from_tree(tree);
+        assert_eq!(diag.participants.len(), 2);
     }
 }

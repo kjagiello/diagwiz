@@ -1,4 +1,4 @@
-use crate::utils::Span;
+use crate::utils::{Span, Spanned};
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 
@@ -13,6 +13,15 @@ pub struct Tree<'a> {
 pub struct Str<'a> {
     pub span: Span,
     pub str: &'a str,
+}
+
+impl<'a> Str<'a> {
+    fn spanless(value: &'a str) -> Str<'a> {
+        Str {
+            span: Span { start: 0, end: 0 },
+            str: value,
+        }
+    }
 }
 
 impl<'a> Hash for Str<'a> {
@@ -75,6 +84,27 @@ pub enum AttrValue<'a> {
 pub struct Attrs<'a> {
     pub span: Span,
     pub data: HashMap<Str<'a>, AttrValue<'a>>,
+}
+
+impl<'a> Attrs<'a> {
+    pub fn get_str(&self, key: &str) -> Option<Spanned<&'a str>> {
+        // TODO: ensure right type in the attr value
+        self.data
+            .get(&Str::spanless(key))
+            .map(|value| match value {
+                AttrValue::Atom(atom) => Some(atom),
+                _ => None,
+            })
+            .unwrap()
+            .map(|atom| match atom.value {
+                AtomValue::String(str) => Some(Spanned {
+                    span: atom.span,
+                    value: str,
+                }),
+                _ => None,
+            })
+            .unwrap_or(None)
+    }
 }
 
 /// Statements that make up the AST

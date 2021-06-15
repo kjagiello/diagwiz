@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use crate::parser::ast;
-use crate::utils::{Span, Spanned};
+use crate::parser::utils::{Span, Spanned};
 use std::collections::HashMap;
 use std::sync::Arc;
 

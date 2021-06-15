@@ -3,14 +3,16 @@
 
 use std::collections::HashMap;
 
-use crate::utils::Span;
 use pest::error::Error;
 use pest::Parser;
+
+use utils::Span;
 
 #[cfg(test)]
 mod tests;
 
 pub(crate) mod ast;
+pub(crate) mod utils;
 
 #[derive(Parser)]
 #[grammar = "parser/grammar.pest"]

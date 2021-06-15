@@ -1,6 +1,6 @@
 use crate::parser;
 use crate::parser::ast;
-use crate::utils::Span;
+use crate::parser::utils::Span;
 use maplit::hashmap;
 
 #[test]

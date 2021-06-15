@@ -1,4 +1,4 @@
-use crate::utils::{Span, Spanned};
+use super::utils::{Span, Spanned};
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 

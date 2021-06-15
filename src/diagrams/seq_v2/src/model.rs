@@ -48,7 +48,6 @@ impl<'a> SeqDiag<'a> {
                             value: ident.str,
                             span: ident.span,
                         },
-                        // TODO: Extract the label from attrs
                         label: attrs
                             .as_ref()
                             .map(|attrs| attrs.get_str("label"))

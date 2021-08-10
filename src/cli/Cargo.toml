@@ -7,4 +7,5 @@ edition = "2018"
 [dependencies]
 diagram_base = { path = "../diagrams/base", version = "0.1.0" }
 diagram_seq = { path = "../diagrams/seq", version = "0.1.0" }
+diagram_seq_v2 = { path = "../diagrams/seq_v2", version = "0.1.0" }
 clap = { version = "2.33.3" }
